@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fintech App</title>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    
+    <style>
+        :root {
+            --primary-bg: #f8f9fa;
+            --card-gradient: linear-gradient(135deg, #44607a 0%, #2c3e50 100%);
+            --accent-teal: #008080;
+            --bright-blue: #00d2ff;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        /* Mobile Container */
+        .app-container {
+            width: 375px;
+            height: 750px;
+            background: white;
+            border-radius: 40px;
+            position: relative;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+            overflow: hidden;
+        }
+
+        .screen {
+            padding: 25px;
+            height: 100%;
+            box-sizing: border-box;
+            display: none;
+            flex-direction: column;
+        }
+
+        .screen.active {
+            display: flex;
+        }
+
+        /* --- Page 1 Styles --- */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .avatar { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; }
+        header h1 { font-size: 24px; margin: 0; font-weight: 700; }
+        .notif { font-size: 20px; background: #f1f3f5; padding: 10px; border-radius: 50%; }
+
+        .card {
+            background: var(--card-gradient);
+            border-radius: 20px;
+            padding: 25px;
+            color: white;
+            height: 200px;
+            position: relative;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 20px rgba(44, 62, 80, 0.2);
+        }
+
+        #main-balance { font-size: 40px; font-weight: bold; margin: 15px 0 5px 0; }
+        .card-number { letter-spacing: 3px; font-size: 14px; margin: 20px 0; opacity: 0.9; }
+        .card-footer { display: flex; gap: 20px; font-size: 11px; opacity: 0.7; }
+
+        .section-title { font-size: 18px; font-weight: 700; margin: 20px 0 15px 0; }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+
+        .item {
+            background: #f8f9fa;
+            border-radius: 15px;
+            height: 80px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .item:hover { background: #edf0f2; }
+
+        .services-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .service-box {
+            flex: 1;
+            height: 70px;
+            background: #f1f3f5;
+            border-radius: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 22px;
+        }
+
+        .service-box.active { background: var(--accent-teal); color: white; }
+
+        /* --- Page 2 Styles --- */
+        .back-btn { cursor: pointer; font-size: 18px; margin-bottom: 30px; }
+        
+        .loan-title { text-align: center; margin-top: 40px; color: #666; }
+        .amount-display { 
+            font-size: 56px; 
+            font-weight: 800; 
+            text-align: center; 
+            margin: 20px 0; 
+            color: #2c3e50; 
+        }
+
+        input[type=range] {
+            width: 100%;
+            margin: 30px 0;
+            accent-color: var(--accent-teal);
+            cursor: pointer;
+        }
+
+        .month-selector {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        .month-chip {
+            padding: 15px 20px;
+            border: 2px solid #eee;
+            border-radius: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .month-chip.selected {
+            background: var(--accent-teal);
+            color: white;
+            border-color: var(--accent-teal);
+        }
+
+        .cta-button {
+            width: 100%;
+            padding: 20px;
+            background: var(--bright-blue);
+            color: white;
+            border: none;
+            border-radius: 18px;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: auto;
+            margin-bottom: 10px;
+            transition: transform 0.2s;
+        }
+
+        .cta-button:active { transform: scale(0.98); }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        <div id="page1" class="screen active">
+            <header>
+                <img src="https://i.pravatar.cc/150?u=a042581f4e29026704d" class="avatar" alt="User">
+                <h1>Fintech</h1>
+                <div class="notif">🔔</div>
+            </header>
+
+            <div class="card">
+                <div style="font-size: 12px; opacity: 0.8;">Balance</div>
+                <div id="main-balance">121</div>
+                <div class="card-number">•••• •••• •••• 8635</div>
+                <div class="card-footer">
+                    <span>Valid From 10/25</span>
+                    <span>Valid thru 10/30</span>
+                </div>
+            </div>
+
+            <div class="section-title">Quick Actions</div>
+            <div class="grid">
+                <div class="item" onclick="showPage(2)">⇄</div>
+                <div class="item">⚡</div>
+                <div class="item">🏦</div>
+            </div>
+
+            <div class="section-title">Services</div>
+            <div class="services-row">
+                <div class="service-box">📄</div>
+                <div class="service-box">🎁</div>
+                <div class="service-box">🤲</div>
+                <div class="service-box active">🎁</div>
+            </div>
+        </div>
+
+        <div id="page2" class="screen">
+            <div class="back-btn" onclick="showPage(1)">✕ Close</div>
+            
+            <div class="loan-title">Loan Amount</div>
+            <div class="amount-display">$<span id="loanValue">5000</span></div>
+            
+            <input type="range" id="rangeInput" min="500" max="15000" step="500" value="5000">
+
+            <div class="section-title">Months</div>
+            <div class="month-selector">
+                <div class="month-chip" onclick="selectMonth(this)">6</div>
+                <div class="month-chip selected" onclick="selectMonth(this)">12</div>
+                <div class="month-chip" onclick="selectMonth(this)">18</div>
+                <div class="month-chip" onclick="selectMonth(this)">24</div>
+            </div>
+
+            <button class="cta-button" onclick="applyLoan()">Get insights</button>
+        </div>
+    </div>
+
+    <script>
+        let currentBalance = 121;
+        const loanValueSpan = document.getElementById('loanValue');
+        const rangeInput = document.getElementById('rangeInput');
+        const balanceDisplay = document.getElementById('main-balance');
+
+        // Перемикання сторінок
+        function showPage(pageNumber) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById('page' + pageNumber).classList.add('active');
+        }
+
+        // Оновлення цифр при русі повзунка
+        rangeInput.addEventListener('input', (e) => {
+            loanValueSpan.innerText = e.target.value;
+        });
+
+        // Вибір місяців
+        function selectMonth(element) {
+            document.querySelectorAll('.month-chip').forEach(c => c.classList.remove('selected'));
+            element.classList.add('selected');
+        }
+
+        // Логіка кнопки "Get insights"
+        function applyLoan() {
+            const loanAmount = parseInt(rangeInput.value);
+            
+            // 1. Повертаємось на головну
+            showPage(1);
+
+            // 2. Анімуємо зміну цифри на картці
+            const startValue = currentBalance;
+            const endValue = currentBalance + loanAmount;
+            const duration = 2000; // 2 секунди
+            const startTime = performance.now();
+
+            function updateNumber(now) {
+                const elapsed = now - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                
+                // Ease out cubic effect
+                const easeProgress = 1 - Math.pow(1 - progress, 3);
+                const current = Math.floor(easeProgress * (endValue - startValue) + startValue);
+                
+                balanceDisplay.innerText = current.toLocaleString();
+
+                if (progress < 1) {
+                    requestAnimationFrame(updateNumber);
+                } else {
+                    currentBalance = endValue;
+                }
+            }
+
+            requestAnimationFrame(updateNumber);
+
+            // 3. Конфеті!
+            confetti({
+                particleCount: 150,
+                spread: 70,
+                origin: { y: 0.6 },
+                colors: ['#00d2ff', '#008080', '#ffffff']
+            });
+        }
+    </script>
+</body>
+</html>
